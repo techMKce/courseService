@@ -23,6 +23,7 @@ public class Course {
 	private String course_title;
 	private String course_description;
 	private String instructor_name;
+	private String Category;
 	
 	
 	@Column(updatable = false)
@@ -38,7 +39,7 @@ public class Course {
 
 
 	public Course(long course_id, String title, String description, String instructor_name, LocalDateTime createdAt,
-			LocalDateTime updatedAt, List<Section> sections) {
+				  LocalDateTime updatedAt, List<Section> sections,String Category) {
 		super();
 		this.course_id = course_id;
 		this.course_title = title;
@@ -47,6 +48,7 @@ public class Course {
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		Sections = sections;
+		this.Category = Category;
 	}
 
 
@@ -117,5 +119,13 @@ public class Course {
 
 	public void setSections(List<Section> sections) {
 		Sections = sections;
+	}
+
+	public String getCategory() {
+		return Category;
+	}
+
+	public void setCategory(String category) {
+		Category = category;
 	}
 }

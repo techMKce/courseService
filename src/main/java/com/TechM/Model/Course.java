@@ -11,121 +11,107 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 
 @Entity
 public class Course {
-	
-	
+
+
+	public Course() {
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long course_id;
-	private String course_title;
-	private String course_description;
-	private String instructor_name;
-	private String Category;
-	
-	
-	@Column(updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+	private String courseTitle;
+	private String courseDescription;
+	private String instructorName;
+	private String category;
+
+	@CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Temporal(TemporalType.TIMESTAMP)
+	@UpdateTimestamp
     private LocalDateTime updatedAt;
     
     
     @OneToMany(mappedBy="course")
     private List<Section> Sections;
 
-
-	public Course(long course_id, String title, String description, String instructor_name, LocalDateTime createdAt,
-				  LocalDateTime updatedAt, List<Section> sections,String Category) {
-		super();
+	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String category, LocalDateTime createdAt, LocalDateTime updatedAt, List<Section> sections) {
 		this.course_id = course_id;
-		this.course_title = title;
-		this.course_description = description;
-		this.instructor_name = instructor_name;
+		this.courseTitle = courseTitle;
+		this.instructorName = instructorName;
+		this.courseDescription = courseDescription;
+		this.category = category;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		Sections = sections;
-		this.Category = Category;
 	}
-
 
 	public long getCourse_id() {
 		return course_id;
 	}
 
-
 	public void setCourse_id(long course_id) {
 		this.course_id = course_id;
 	}
 
-
-	public String getTitle() {
-		return course_title;
+	public String getCourseTitle() {
+		return courseTitle;
 	}
 
-
-	public void setTitle(String title) {
-		this.course_title = title;
+	public void setCourseTitle(String courseTitle) {
+		this.courseTitle = courseTitle;
 	}
 
-
-	public String getDescription() {
-		return course_description;
+	public String getCourseDescription() {
+		return courseDescription;
 	}
 
-
-	public void setDescription(String description) {
-		this.course_description = description;
+	public void setCourseDescription(String courseDescription) {
+		this.courseDescription = courseDescription;
 	}
 
-
-	public String getInstructor_name() {
-		return instructor_name;
+	public String getInstructorName() {
+		return instructorName;
 	}
 
-
-	public void setInstructor_name(String instructor_name) {
-		this.instructor_name = instructor_name;
+	public void setInstructorName(String instructorName) {
+		this.instructorName = instructorName;
 	}
 
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
 
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
 
-
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
-
 
 	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
 	}
 
-
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-
 
 	public List<Section> getSections() {
 		return Sections;
 	}
 
-
 	public void setSections(List<Section> sections) {
 		Sections = sections;
-	}
-
-	public String getCategory() {
-		return Category;
-	}
-
-	public void setCategory(String category) {
-		Category = category;
 	}
 }

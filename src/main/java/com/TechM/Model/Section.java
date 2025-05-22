@@ -16,8 +16,6 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 public class Section {
-	
-	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long section_id;

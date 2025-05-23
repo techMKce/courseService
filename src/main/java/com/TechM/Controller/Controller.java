@@ -2,8 +2,10 @@ package com.TechM.Controller;
 
 import com.TechM.Model.Category;
 import com.TechM.Model.Course;
+import com.TechM.Model.Section;
 import com.TechM.Repository.CategoryRepository;
 import com.TechM.Repository.CourseRepository;
+import com.TechM.Repository.SectionRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +18,11 @@ public class Controller {
 
     private CourseRepository c;
     private CategoryRepository ca;
-
-    public Controller(CourseRepository c,CategoryRepository ca) {
+    private SectionRepository sr;
+    public Controller(CourseRepository c,CategoryRepository ca,SectionRepository sr) {
         this.c = c;
         this.ca = ca;
+        this.sr=sr;
     }
 
     @PostMapping("/add")
@@ -44,7 +47,7 @@ public class Controller {
     public ResponseEntity<String> updateCourse(@RequestBody Course course) {
         Course existing = c.findByCourseTitle(course.getCourseTitle());
         if (existing == null) {
-            return new ResponseEntity<>("Course not found.", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Course not found.", HttpStatus.NOT_FOUND);
         }
         course.setCourse_id(existing.getCourse_id()); // preserve ID
         c.save(course);
@@ -68,5 +71,10 @@ public class Controller {
     public ResponseEntity<List<Course>> getCourses(@RequestParam String category) {
         List<Course> courses = c.findByCategory(category);
         return ResponseEntity.ok(courses); // cleaner response
+    }
+    @PostMapping("/section/add")
+    public ResponseEntity<String> addSection(@RequestBody Section section){
+        sr.save(section);
+        return ResponseEntity.ok("Section added successfully..!");
     }
 }

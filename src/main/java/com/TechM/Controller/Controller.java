@@ -6,10 +6,10 @@ import com.TechM.Model.Section;
 import com.TechM.Repository.CategoryRepository;
 import com.TechM.Repository.CourseRepository;
 import com.TechM.Repository.SectionRepository;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -73,8 +73,25 @@ public class Controller {
         return ResponseEntity.ok(courses); // cleaner response
     }
     @PostMapping("/section/add")
-    public ResponseEntity<String> addSection(@RequestBody Section section){
-        sr.save(section);
-        return ResponseEntity.ok("Section added successfully..!");
+    public ResponseEntity<String> addSection(@RequestBody Section section) {
+        try {
+            Course course = c.findByCourseTitle(section.getCourse().getCourseTitle());
+            if (course == null) {
+                throw new ResourceNotFoundException("Course not found with title: '" + section.getCourse().getCourseTitle() + "'");
+            }
+
+            section.setCourse(course);
+            sr.save(section);
+            return ResponseEntity.ok("Section added successfully!");
+        } catch (ResourceNotFoundException ex) {
+            // Return 404 with error message instead of logging
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Failed to find course: " + section.getCourse().getCourseTitle());
+        } catch (Exception ex) {
+            // Return 500 with generic error message
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred while adding the section.");
+        }
     }
+
 }

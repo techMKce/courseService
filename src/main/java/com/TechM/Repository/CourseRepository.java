@@ -9,4 +9,5 @@ import java.util.List;
 public interface CourseRepository extends JpaRepository<Course,Long> {
     Course findByCourseTitle(String title);
     List<Course> findByCategory(String category);
+    List<Course> findByCourseTitleIgnoringCaseSensitive(String courseTitle);
 }

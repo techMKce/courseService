@@ -2,10 +2,12 @@ package com.TechM.Controller;
 
 import com.TechM.Model.Category;
 import com.TechM.Model.Course;
+import com.TechM.Model.SearchService;
 import com.TechM.Model.Section;
 import com.TechM.Repository.CategoryRepository;
 import com.TechM.Repository.CourseRepository;
 import com.TechM.Repository.SectionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +26,8 @@ public class Controller {
         this.ca = ca;
         this.sr=sr;
     }
-
+    @Autowired
+    private SearchService searchService;
     @PostMapping("/add")
     public ResponseEntity<String> addCourse(@RequestBody Course course) {
         c.save(course);
@@ -88,5 +91,10 @@ public class Controller {
     public ResponseEntity<String> deleteSection(@RequestBody long section_id){
         sr.deleteById(section_id);
         return ResponseEntity.ok("Section Deleted successfully");
+    }
+    @GetMapping("/search")
+    public List<Course> searchItems(@RequestParam String query){
+        List<Course> results = searchService.searchitems(query);
+        return ResponseEntity.ok(results).getBody();
     }
 }

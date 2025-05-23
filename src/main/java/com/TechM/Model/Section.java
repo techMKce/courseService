@@ -13,6 +13,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class Section {
@@ -27,24 +29,23 @@ public class Section {
 	@JoinColumn(name="course_id")
 	private Course course;
 	
-	private String section_title;
+	private String sectionTitle;
 	private URL content;
-	private int order_number;
-	@Column(updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+	private int orderNumber;
+	@CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-	public Section(long section_id, Course course, String section_title, URL content, int order_number,
+	public Section(long section_id, Course course, String sectionTitle, URL content, int orderNumber,
 			LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.section_id = section_id;
 		this.course = course;
-		this.section_title = section_title;
+		this.sectionTitle = sectionTitle;
 		this.content = content;
-		this.order_number = order_number;
+		this.orderNumber = orderNumber;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
@@ -66,11 +67,11 @@ public class Section {
 	}
 
 	public String getSection_title() {
-		return section_title;
+		return sectionTitle;
 	}
 
 	public void setSection_title(String section_title) {
-		this.section_title = section_title;
+		this.sectionTitle = section_title;
 	}
 
 	public URL getContent() {
@@ -82,11 +83,11 @@ public class Section {
 	}
 
 	public int getOrder_number() {
-		return order_number;
+		return orderNumber;
 	}
 
 	public void setOrder_number(int order_number) {
-		this.order_number = order_number;
+		this.orderNumber = order_number;
 	}
 
 	public LocalDateTime getCreatedAt() {

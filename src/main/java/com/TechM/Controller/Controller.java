@@ -50,8 +50,8 @@ public class Controller {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteCourse(@RequestBody long course_id){
-        c.deleteById(course_id);
+    public ResponseEntity<String> deleteCourse(@RequestBody String course_id){
+        c.deleteById(Long.parseLong(course_id));
         return new ResponseEntity<>("Course Deleted Successfully...",HttpStatus.OK);
     }
 
@@ -85,8 +85,9 @@ public class Controller {
         return ResponseEntity.ok("Section updated successfully");
     }
     @DeleteMapping("section/delete")
-    public ResponseEntity<String> deleteSection(@RequestBody long section_id){
-        sr.deleteById(section_id);
+    public ResponseEntity<String> deleteSection(@RequestBody String section_id){
+        sr.deleteById(Long.parseLong(section_id));
         return ResponseEntity.ok("Section Deleted successfully");
     }
+
 }

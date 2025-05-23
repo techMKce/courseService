@@ -3,6 +3,8 @@ package com.TechM.Model;
 import java.net.URL;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,36 +13,38 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class Section {
-	
-	
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long section_id;
-	
-	
+
 	@ManyToOne
-	@JoinColumn(name="course_id")
+	@JoinColumn(name = "course_id")
+	@JsonIgnoreProperties("sections") // Avoid infinite recursion but still allow deserialization
 	private Course course;
-	
+
 	private String sectionTitle;
 	private URL content;
 	private int orderNumber;
-	@CreationTimestamp
-    private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+	@CreationTimestamp
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+	private LocalDateTime createdAt;
+
+	@UpdateTimestamp
+	private LocalDateTime updatedAt;
+
+	// Constructors
+	public Section() {}
 
 	public Section(long section_id, Course course, String sectionTitle, URL content, int orderNumber,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
-		super();
+				   LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.section_id = section_id;
 		this.course = course;
 		this.sectionTitle = sectionTitle;
@@ -50,6 +54,7 @@ public class Section {
 		this.updatedAt = updatedAt;
 	}
 
+	// Getters and Setters
 	public long getSection_id() {
 		return section_id;
 	}
@@ -66,12 +71,12 @@ public class Section {
 		this.course = course;
 	}
 
-	public String getSection_title() {
+	public String getSectionTitle() {
 		return sectionTitle;
 	}
 
-	public void setSection_title(String section_title) {
-		this.sectionTitle = section_title;
+	public void setSectionTitle(String sectionTitle) {
+		this.sectionTitle = sectionTitle;
 	}
 
 	public URL getContent() {
@@ -82,12 +87,12 @@ public class Section {
 		this.content = content;
 	}
 
-	public int getOrder_number() {
+	public int getOrderNumber() {
 		return orderNumber;
 	}
 
-	public void setOrder_number(int order_number) {
-		this.orderNumber = order_number;
+	public void setOrderNumber(int orderNumber) {
+		this.orderNumber = orderNumber;
 	}
 
 	public LocalDateTime getCreatedAt() {

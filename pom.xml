@@ -54,9 +54,9 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-		    <groupId>org.postgresql</groupId>
-		    <artifactId>postgresql</artifactId>
-		    <version>42.7.5</version>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j 

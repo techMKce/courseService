@@ -66,6 +66,13 @@ public class Controller {
         List<Course> courses = c.findByCategory(category);
         return ResponseEntity.ok(courses); // cleaner response
     }
+    
+    //By Sanjay
+    @GetMapping("/filtercourse")
+    public ResponseEntity<List<Course>> getCoursesByPrefix(@RequestParam String course) {
+        List<Course> courses = c.findCoursesByPrefix(course);
+        return ResponseEntity.ok(courses); // cleaner response
+    }
 
     @PostMapping("/section/add")
     public ResponseEntity<String> addSection(@RequestBody Section section){

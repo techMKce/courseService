@@ -46,19 +46,13 @@ public class Controller {
 
     @PutMapping("/update")
     public ResponseEntity<String> updateCourse(@RequestBody Course course) {
-        Course existing = c.findByCourseTitle(course.getCourseTitle());
-        if (existing == null) {
-                return new ResponseEntity<>("Course not found.", HttpStatus.NOT_FOUND);
-        }
-        course.setCourse_id(existing.getCourse_id()); // preserve ID
         c.save(course);
         return ResponseEntity.ok("Course modified successfully...");
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteCourse(@RequestBody String title){
-        Course existing = c.findByCourseTitle(title);
-        c.deleteById(existing.getCourse_id());
+    public ResponseEntity<String> deleteCourse(@RequestBody String course_id){
+        c.deleteById(Long.parseLong(course_id));
         return new ResponseEntity<>("Course Deleted Successfully...",HttpStatus.OK);
     }
 
@@ -73,6 +67,14 @@ public class Controller {
         List<Course> courses = c.findByCategory(category);
         return ResponseEntity.ok(courses); // cleaner response
     }
+    
+    //By Sanjay
+    @GetMapping("/filtercourse")
+    public ResponseEntity<List<Course>> getCoursesByPrefix(@RequestParam String course) {
+        List<Course> courses = c.findCoursesByPrefix(course);
+        return ResponseEntity.ok(courses); // cleaner response
+    }
+
     @PostMapping("/section/add")
     public ResponseEntity<String> addSection(@RequestBody Section section) {
         try {
@@ -108,6 +110,7 @@ public class Controller {
         sr.delete(optional.get());
         return ResponseEntity.ok("Section deleted successfully...");
     }
+
      @GetMapping("/section/details{id}")
     public ResponseEntity<?> sectionDetailsById(@PathVariable Long id) {
         Optional<Section>optional = sr.findById(id);
@@ -133,5 +136,22 @@ public class Controller {
         }
         return ResponseEntity.ok(list);
       }
+
+    @GetMapping("/section/details")
+    public ResponseEntity<List<Section>> getSection(@RequestParam("id") long course_id){
+        Course course=c.getReferenceById(course_id);
+        List<Section>  sectionlist=course.getSections();
+        return ResponseEntity.ok(sectionlist);
+    }
+    @PutMapping("/section/update")
+    public ResponseEntity<String> updateSection(@RequestBody Section section){
+        sr.save(section);
+        return ResponseEntity.ok("Section updated successfully");
+    }
+    @DeleteMapping("section/delete")
+    public ResponseEntity<String> deleteSection(@RequestBody String section_id){
+        sr.deleteById(Long.parseLong(section_id));
+        return ResponseEntity.ok("Section Deleted successfully");
+    }
 
 }

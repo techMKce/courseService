@@ -1,9 +1,11 @@
 package com.TechM.Controller;
 
 import com.TechM.Model.Category;
+import com.TechM.Model.Content;
 import com.TechM.Model.Course;
 import com.TechM.Model.Section;
 import com.TechM.Repository.CategoryRepository;
+import com.TechM.Repository.ContentRepository;
 import com.TechM.Repository.CourseRepository;
 import com.TechM.Repository.SectionRepository;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -20,10 +22,12 @@ public class Controller {
     private final CourseRepository c;
     private final CategoryRepository ca;
     private final SectionRepository sr;
-    public Controller(CourseRepository c,CategoryRepository ca,SectionRepository sr) {
+    private final ContentRepository cr;
+    public Controller(CourseRepository c, CategoryRepository ca, SectionRepository sr, ContentRepository cr) {
         this.c = c;
         this.ca = ca;
         this.sr=sr;
+        this.cr = cr;
     }
 
     @PostMapping("/add")
@@ -74,68 +78,11 @@ public class Controller {
         List<Course> courses = c.findCoursesByPrefix(course);
         return ResponseEntity.ok(courses); // clean
     }
-
     @PostMapping("/section/add")
-    public ResponseEntity<String> addSection(@RequestBody Section section) {
-        try {
-            Course course = c.findByCourseTitle(section.getCourse().getCourseTitle());
-            if (course == null) {
-                throw new ResourceNotFoundException("Course not found with title: '" + section.getCourse().getCourseTitle() + "'");
-            }
-
-            section.setCourse(course);
-            sr.save(section);
-            return ResponseEntity.ok("Section added successfully!");
-        } catch (ResourceNotFoundException ex) {
-            // Return 404 with error message instead of logging
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Failed to find course: " + section.getCourse().getCourseTitle());
-        } catch (Exception ex) {
-            // Return 500 with generic error message
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An unexpected error occurred while adding the section.");
-        }
-    }
-    @PutMapping("/section/update")
-    public ResponseEntity<String> updateSection(@RequestBody Section section) {//if there is no
+    public ResponseEntity<String> addSection(@RequestBody Section section){
         sr.save(section);
-        return ResponseEntity.ok("section updated successfully ...");
+        return ResponseEntity.ok("Section added successfully..!");
     }
-    @DeleteMapping("/section/delete")
-    public ResponseEntity<String> sectionDelete(@RequestBody Section section) {// required Sectionid
-        Optional<Section> optional = sr.findById(section.getSection_id());
-        if(optional.isEmpty())
-            return ResponseEntity.ok("sectionid is not valid :"+section.getSection_id());
-
-        sr.delete(optional.get());
-        return ResponseEntity.ok("Section deleted successfully...");
-    }
-
-     @GetMapping("/section/details{id}")
-    public ResponseEntity<?> sectionDetailsById(@PathVariable Long id) {
-        Optional<Section>optional = sr.findById(id);
-        if(optional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Section not found with id: " + id);
-        }
-         return ResponseEntity.ok(optional.get());
-     }
-     @GetMapping("/section/details")
-    public ResponseEntity<?> SectionDetails() {
-        List<Section> sectionList = sr.findAll();
-        if(sectionList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-         return ResponseEntity.ok(sectionList);
-     }
-     @GetMapping("/course/search")
-    public ResponseEntity<List<Course>> courseSearch(@RequestParam String title) {
-        List<Course> list = c.findByTitleContainingIgnoreCase(title);
-        if(list.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        return ResponseEntity.ok(list);
-      }
 
     @GetMapping("/section/details")
     public ResponseEntity<List<Section>> getSection(@RequestParam("id") long course_id){
@@ -153,9 +100,30 @@ public class Controller {
         sr.deleteById(Long.parseLong(section_id));
         return ResponseEntity.ok("Section Deleted successfully");
     }
+    @PostMapping("/section/content/add")
+    public ResponseEntity<String> addContent(@RequestBody Content content){
+        cr.save(content);
+        return ResponseEntity.ok("Content added successfully..!");
+    }
+    @DeleteMapping("section/content/delete")
+    public ResponseEntity<String> deleteContent(@RequestBody String content_id){
+        cr.deleteById(Long.parseLong(content_id));
+        return ResponseEntity.ok("Content Deleted successfully");
+}
     @GetMapping("/count")
     public ResponseEntity<Integer> courseCount(){
         int val = c.findAll().size();
         return new ResponseEntity<>(val,HttpStatus.OK);
     }
+    @GetMapping("/active")
+    public ResponseEntity<List<Course>> getActiveCourses() {
+        List<Course> activeCourses = c.findByIsActiveTrue();
+        return ResponseEntity.ok(activeCourses);
+}
+    @GetMapping("/disable")
+    public ResponseEntity<List<Course>> getDisableCourses() {
+        List<Course> activeCourses = c.findByIsActiveFalse();
+        return ResponseEntity.ok(activeCourses);
+    }
+
 }

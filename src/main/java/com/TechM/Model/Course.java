@@ -29,7 +29,7 @@ public class Course {
 	private String courseTitle;
 	private String courseDescription;
 	private String instructorName;
-	private String category;
+	private String dept;
 
 	@CreationTimestamp
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
@@ -48,12 +48,12 @@ public class Course {
     @OneToMany(mappedBy="course")
     private List<Section> Sections;
 
-	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String category, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isActive, int duration, int credit, List<Section> sections) {
+	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String dept, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isActive, int duration, int credit, List<Section> sections) {
 		this.course_id = course_id;
 		this.courseTitle = courseTitle;
 		this.instructorName = instructorName;
 		this.courseDescription = courseDescription;
-		this.category = category;
+		this.dept = dept;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.isActive = isActive;
@@ -63,11 +63,11 @@ public class Course {
 	}
 
 	public String getCategory() {
-		return category;
+		return dept;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setCategory(String dept) {
+		this.dept = dept;
 	}
 
 	public long getCourse_id() {

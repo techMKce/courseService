@@ -16,8 +16,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class Section {
-	public Section() {
-	}
+
 
 
 	@Id

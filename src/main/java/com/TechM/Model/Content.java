@@ -1,14 +1,15 @@
 package com.TechM.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import java.net.URL;
 
 @Entity
 public class Content {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long content_id;
     private URL content;
     @ManyToOne
     @JoinColumn(name="section_id")

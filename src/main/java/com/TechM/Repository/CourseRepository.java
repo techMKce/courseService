@@ -14,15 +14,15 @@ import java.util.Optional;
 public interface CourseRepository extends JpaRepository<Course,Long> {
     Course findByCourseTitle(String title);
     List<Course> findByCategory(String category);
-
-
+    List<Course>  findByIsActiveTrue();
+    List<Course>  findByIsActiveFalse();
     Optional<Course> searchCoursesByTitle(String title);
 
     List<Course> findByTitleContainingIgnoreCase(String title);
 
     
     //By Sanjay => I'm not sure about DB structure ,so i made a generic query
-    @Query("SELECT c FROM Course c WHERE c.title LIKE CONCAT(:prefix, '%')")
+    @Query("SELECT c FROM Course c WHERE c.courseTitle LIKE CONCAT(:prefix, '%')")
     List<Course> findCoursesByPrefix(@Param("prefix") String prefix);
 
 

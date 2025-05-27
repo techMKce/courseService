@@ -71,7 +71,7 @@ public class Controller {
     @GetMapping("/filtercourse")
     public ResponseEntity<List<Course>> getCoursesByPrefix(@RequestParam String course) {
         List<Course> courses = c.findCoursesByPrefix(course);
-        return ResponseEntity.ok(courses); // cleaner response
+        return ResponseEntity.ok(courses); // clean
     }
 
     @PostMapping("/section/add")
@@ -96,5 +96,9 @@ public class Controller {
         sr.deleteById(Long.parseLong(section_id));
         return ResponseEntity.ok("Section Deleted successfully");
     }
-
+    @GetMapping("/count")
+    public ResponseEntity<Integer> courseCount(){
+        int val = c.findAll().size();
+        return new ResponseEntity<>(val,HttpStatus.OK);
+    }
 }

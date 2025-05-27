@@ -37,12 +37,18 @@ public class Course {
 
 	@UpdateTimestamp
     private LocalDateTime updatedAt;
+
+	private boolean isActive;
+
+	private int duration;
+
+	private int credit;
     
     
     @OneToMany(mappedBy="course")
     private List<Section> Sections;
 
-	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String category, LocalDateTime createdAt, LocalDateTime updatedAt, List<Section> sections) {
+	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String category, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isActive, int duration, int credit, List<Section> sections) {
 		this.course_id = course_id;
 		this.courseTitle = courseTitle;
 		this.instructorName = instructorName;
@@ -50,7 +56,18 @@ public class Course {
 		this.category = category;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.isActive = isActive;
+		this.duration = duration;
+		this.credit = credit;
 		Sections = sections;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 	public long getCourse_id() {
@@ -69,14 +86,6 @@ public class Course {
 		this.courseTitle = courseTitle;
 	}
 
-	public String getCourseDescription() {
-		return courseDescription;
-	}
-
-	public void setCourseDescription(String courseDescription) {
-		this.courseDescription = courseDescription;
-	}
-
 	public String getInstructorName() {
 		return instructorName;
 	}
@@ -85,12 +94,12 @@ public class Course {
 		this.instructorName = instructorName;
 	}
 
-	public String getCategory() {
-		return category;
+	public String getCourseDescription() {
+		return courseDescription;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setCourseDescription(String courseDescription) {
+		this.courseDescription = courseDescription;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -107,6 +116,30 @@ public class Course {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean active) {
+		isActive = active;
+	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	public int getCredit() {
+		return credit;
+	}
+
+	public void setCredit(int credit) {
+		this.credit = credit;
 	}
 
 	public List<Section> getSections() {

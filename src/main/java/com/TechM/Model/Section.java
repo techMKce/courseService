@@ -7,13 +7,18 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+
 import jakarta.persistence.*;
+
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class Section {
+	public Section() {
+	}
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

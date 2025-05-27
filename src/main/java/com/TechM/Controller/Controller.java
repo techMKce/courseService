@@ -1,33 +1,35 @@
 package com.TechM.Controller;
 
 import com.TechM.Model.Category;
+import com.TechM.Model.Content;
 import com.TechM.Model.Course;
-import com.TechM.Model.SearchService;
 import com.TechM.Model.Section;
 import com.TechM.Repository.CategoryRepository;
+import com.TechM.Repository.ContentRepository;
 import com.TechM.Repository.CourseRepository;
 import com.TechM.Repository.SectionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/course")
 public class Controller {
 
-    private CourseRepository c;
-    private CategoryRepository ca;
-    private SectionRepository sr;
-    public Controller(CourseRepository c,CategoryRepository ca,SectionRepository sr) {
+    private final CourseRepository c;
+    private final CategoryRepository ca;
+    private final SectionRepository sr;
+    private final ContentRepository cr;
+    public Controller(CourseRepository c, CategoryRepository ca, SectionRepository sr, ContentRepository cr) {
         this.c = c;
         this.ca = ca;
         this.sr=sr;
+        this.cr = cr;
     }
-    @Autowired
-    private SearchService searchService;
+
     @PostMapping("/add")
     public ResponseEntity<String> addCourse(@RequestBody Course course) {
         c.save(course);
@@ -53,8 +55,8 @@ public class Controller {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteCourse(@RequestBody long course_id){
-        c.deleteById(course_id);
+    public ResponseEntity<String> deleteCourse(@RequestBody String course_id){
+        c.deleteById(Long.parseLong(course_id));
         return new ResponseEntity<>("Course Deleted Successfully...",HttpStatus.OK);
     }
 
@@ -69,7 +71,13 @@ public class Controller {
         List<Course> courses = c.findByCategory(category);
         return ResponseEntity.ok(courses); // cleaner response
     }
-
+    
+    //By Sanjay
+    @GetMapping("/filtercourse")
+    public ResponseEntity<List<Course>> getCoursesByPrefix(@RequestParam String course) {
+        List<Course> courses = c.findCoursesByPrefix(course);
+        return ResponseEntity.ok(courses); // clean
+    }
     @PostMapping("/section/add")
     public ResponseEntity<String> addSection(@RequestBody Section section){
         sr.save(section);
@@ -88,13 +96,34 @@ public class Controller {
         return ResponseEntity.ok("Section updated successfully");
     }
     @DeleteMapping("section/delete")
-    public ResponseEntity<String> deleteSection(@RequestBody long section_id){
-        sr.deleteById(section_id);
+    public ResponseEntity<String> deleteSection(@RequestBody String section_id){
+        sr.deleteById(Long.parseLong(section_id));
         return ResponseEntity.ok("Section Deleted successfully");
     }
-    @GetMapping("/search")
-    public List<Course> searchItems(@RequestParam String query){
-        List<Course> results = searchService.searchitems(query);
-        return ResponseEntity.ok(results).getBody();
+    @PostMapping("/section/content/add")
+    public ResponseEntity<String> addContent(@RequestBody Content content){
+        cr.save(content);
+        return ResponseEntity.ok("Content added successfully..!");
     }
+    @DeleteMapping("section/content/delete")
+    public ResponseEntity<String> deleteContent(@RequestBody String content_id){
+        cr.deleteById(Long.parseLong(content_id));
+        return ResponseEntity.ok("Content Deleted successfully");
+}
+    @GetMapping("/count")
+    public ResponseEntity<Integer> courseCount(){
+        int val = c.findAll().size();
+        return new ResponseEntity<>(val,HttpStatus.OK);
+    }
+    @GetMapping("/active")
+    public ResponseEntity<List<Course>> getActiveCourses() {
+        List<Course> activeCourses = c.findByIsActiveTrue();
+        return ResponseEntity.ok(activeCourses);
+}
+    @GetMapping("/disable")
+    public ResponseEntity<List<Course>> getDisableCourses() {
+        List<Course> activeCourses = c.findByIsActiveFalse();
+        return ResponseEntity.ok(activeCourses);
+    }
+
 }

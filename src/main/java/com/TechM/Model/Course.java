@@ -3,6 +3,7 @@ package com.TechM.Model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,27 +29,45 @@ public class Course {
 	private String courseTitle;
 	private String courseDescription;
 	private String instructorName;
-	private String category;
+	private String dept;
 
 	@CreationTimestamp
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime createdAt;
 
 	@UpdateTimestamp
     private LocalDateTime updatedAt;
+
+	private boolean isActive;
+
+	private int duration;
+
+	private int credit;
     
     
     @OneToMany(mappedBy="course")
     private List<Section> Sections;
 
-	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String category, LocalDateTime createdAt, LocalDateTime updatedAt, List<Section> sections) {
+	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String dept, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isActive, int duration, int credit, List<Section> sections) {
 		this.course_id = course_id;
 		this.courseTitle = courseTitle;
 		this.instructorName = instructorName;
 		this.courseDescription = courseDescription;
-		this.category = category;
+		this.dept = dept;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.isActive = isActive;
+		this.duration = duration;
+		this.credit = credit;
 		Sections = sections;
+	}
+
+	public String getCategory() {
+		return dept;
+	}
+
+	public void setCategory(String dept) {
+		this.dept = dept;
 	}
 
 	public long getCourse_id() {
@@ -67,14 +86,6 @@ public class Course {
 		this.courseTitle = courseTitle;
 	}
 
-	public String getCourseDescription() {
-		return courseDescription;
-	}
-
-	public void setCourseDescription(String courseDescription) {
-		this.courseDescription = courseDescription;
-	}
-
 	public String getInstructorName() {
 		return instructorName;
 	}
@@ -83,12 +94,12 @@ public class Course {
 		this.instructorName = instructorName;
 	}
 
-	public String getCategory() {
-		return category;
+	public String getCourseDescription() {
+		return courseDescription;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setCourseDescription(String courseDescription) {
+		this.courseDescription = courseDescription;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -105,6 +116,30 @@ public class Course {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean active) {
+		isActive = active;
+	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	public int getCredit() {
+		return credit;
+	}
+
+	public void setCredit(int credit) {
+		this.credit = credit;
 	}
 
 	public List<Section> getSections() {

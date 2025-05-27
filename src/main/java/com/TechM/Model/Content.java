@@ -10,6 +10,7 @@ public class Content {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long content_id;
+    private String contentType;
     private URL content;
     @ManyToOne
     @JoinColumn(name="section_id")
@@ -19,9 +20,18 @@ public class Content {
     public Content() {
     }
 
-    public Content(URL content, Section section) {
+    public Content(URL content, Section section,String contentType) {
         this.content = content;
         this.section = section;
+        this.contentType = contentType;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public URL getContent() {

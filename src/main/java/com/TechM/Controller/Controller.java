@@ -33,7 +33,7 @@ public class Controller {
     @PostMapping("/add")
     public ResponseEntity<String> addCourse(@RequestBody Course course) {
         c.save(course);
-        String category = course.getCategory();
+        String category = course.getDept()  ;
         System.out.println(category);
         System.out.println(ca.findById(category));
         if(!ca.findById(category).isPresent()){
@@ -55,7 +55,7 @@ public class Controller {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteCourse(@RequestBody String course_id){
+    public ResponseEntity<String> deleteCourse(@RequestParam String course_id){
         c.deleteById(Long.parseLong(course_id));
         return new ResponseEntity<>("Course Deleted Successfully...",HttpStatus.OK);
     }
@@ -67,15 +67,15 @@ public class Controller {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<List<Course>> getCourses(@RequestParam String category) {
-        List<Course> courses = c.findByCategory(category);
+    public ResponseEntity<List<Course>> getCourses(@RequestParam String dept) {
+        List<Course> courses = c.findByDept(dept);
         return ResponseEntity.ok(courses); // cleaner response
     }
     
     //By Sanjay
     @GetMapping("/filtercourse")
-    public ResponseEntity<List<Course>> getCoursesByPrefix(@RequestParam String course) {
-        List<Course> courses = c.findCoursesByPrefix(course);
+    public ResponseEntity<List<Course>> getCoursesByPrefix(@RequestParam String courseTitle) {
+        List<Course> courses = c.findCoursesByPrefix(courseTitle);
         return ResponseEntity.ok(courses); // clean
     }
     @PostMapping("/section/add")
@@ -109,7 +109,12 @@ public class Controller {
     public ResponseEntity<String> deleteContent(@RequestBody String content_id){
         cr.deleteById(Long.parseLong(content_id));
         return ResponseEntity.ok("Content Deleted successfully");
-}
+    }
+    @GetMapping("section/content/details")
+    public ResponseEntity<List<Content>> getContent(@RequestParam("id") long section_id){
+        List<Content> con=sr.findById(section_id).get().getSectionContents();
+        return ResponseEntity.ok(con);
+    }
     @GetMapping("/count")
     public ResponseEntity<Integer> courseCount(){
         int val = c.findAll().size();
@@ -119,7 +124,7 @@ public class Controller {
     public ResponseEntity<List<Course>> getActiveCourses() {
         List<Course> activeCourses = c.findByIsActiveTrue();
         return ResponseEntity.ok(activeCourses);
-}
+    }
     @GetMapping("/disable")
     public ResponseEntity<List<Course>> getDisableCourses() {
         List<Course> activeCourses = c.findByIsActiveFalse();

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,6 +48,8 @@ public class Course {
     
     
     @OneToMany(mappedBy="course")
+	@JsonIgnore
+//	@JsonManagedReference
     private List<Section> Sections;
 
 	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String dept, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isActive, int duration, int credit, List<Section> sections) {
@@ -62,11 +66,11 @@ public class Course {
 		Sections = sections;
 	}
 
-	public String getCategory() {
+	public String getDept() {
 		return dept;
 	}
 
-	public void setCategory(String dept) {
+	public void setDept(String dept) {
 		this.dept = dept;
 	}
 
@@ -118,7 +122,7 @@ public class Course {
 		this.updatedAt = updatedAt;
 	}
 
-	public boolean isActive() {
+	public boolean getIsActive() {
 		return isActive;
 	}
 
@@ -141,7 +145,7 @@ public class Course {
 	public void setCredit(int credit) {
 		this.credit = credit;
 	}
-
+	@JsonIgnore
 	public List<Section> getSections() {
 		return Sections;
 	}

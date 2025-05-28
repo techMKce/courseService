@@ -38,8 +38,8 @@ public class Controller {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<List<Course>> getCourses(@RequestParam("ids") List<Long> courseIds) {
-        List<Course> courses = c.findAllById(courseIds);
+    public ResponseEntity<List<Course>> getAllCourses() {
+        List<Course> courses = c.findAll();
         return ResponseEntity.ok(courses); // cleaner response
     }
 

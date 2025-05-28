@@ -1,17 +1,14 @@
 package com.TechM.Model;
 
+import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -29,7 +26,7 @@ public class Course {
 	private String courseTitle;
 	private String courseDescription;
 	private String instructorName;
-	private String category;
+	private String dept;
 
 	@CreationTimestamp
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
@@ -43,31 +40,38 @@ public class Course {
 	private int duration;
 
 	private int credit;
-    
+
+
+	@Lob
+	@Column(name = "imageUrl", columnDefinition="TEXT")
+	private String imageUrl;
     
     @OneToMany(mappedBy="course")
+	@JsonIgnore
+//	@JsonManagedReference
     private List<Section> Sections;
 
-	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String category, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isActive, int duration, int credit, List<Section> sections) {
+	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String dept, LocalDateTime createdAt, LocalDateTime updatedAt,String imageUrl, boolean isActive, int duration, int credit, List<Section> sections) {
 		this.course_id = course_id;
 		this.courseTitle = courseTitle;
 		this.instructorName = instructorName;
 		this.courseDescription = courseDescription;
-		this.category = category;
+		this.dept = dept;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.isActive = isActive;
 		this.duration = duration;
 		this.credit = credit;
+		this.imageUrl = imageUrl;
 		Sections = sections;
 	}
 
-	public String getCategory() {
-		return category;
+	public String getDept() {
+		return dept;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setDept(String dept) {
+		this.dept = dept;
 	}
 
 	public long getCourse_id() {
@@ -118,7 +122,7 @@ public class Course {
 		this.updatedAt = updatedAt;
 	}
 
-	public boolean isActive() {
+	public boolean getIsActive() {
 		return isActive;
 	}
 
@@ -141,12 +145,20 @@ public class Course {
 	public void setCredit(int credit) {
 		this.credit = credit;
 	}
-
+	@JsonIgnore
 	public List<Section> getSections() {
 		return Sections;
 	}
 
 	public void setSections(List<Section> sections) {
 		Sections = sections;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 }

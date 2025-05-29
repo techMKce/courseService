@@ -28,7 +28,7 @@ public class Section {
 	@ManyToOne
 	@JoinColumn(name = "course_id")
 	@JsonBackReference
-	@JsonIgnore
+//	@JsonIgnore
 	private Course course;
 
 	private String sectionTitle;
@@ -41,7 +41,7 @@ public class Section {
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 
-	@OneToMany(mappedBy = "section")
+	@OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private List<Content> sectionContents;
 

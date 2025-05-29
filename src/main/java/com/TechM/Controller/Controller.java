@@ -43,8 +43,9 @@ public class Controller {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<List<Course>> getCourses(@RequestParam("ids") List<Long> courseIds) {
-        List<Course> courses = c.findAllById(courseIds);
+    public ResponseEntity<List<Course>> getAllCourses() {
+        List<Course> courses = c.findAll();
+        System.out.println(courses.get(1).getImageUrl());
         return ResponseEntity.ok(courses); // cleaner response
     }
 
@@ -53,7 +54,6 @@ public class Controller {
         c.save(course);
         return ResponseEntity.ok("Course modified successfully...");
     }
-
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteCourse(@RequestParam String course_id){
         c.deleteById(Long.parseLong(course_id));

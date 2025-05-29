@@ -45,8 +45,8 @@ public class Course {
 	@Lob
 	@Column(name = "imageUrl", columnDefinition="TEXT")
 	private String imageUrl;
-    
-    @OneToMany(mappedBy="course")
+
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 //	@JsonManagedReference
     private List<Section> Sections;

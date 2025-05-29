@@ -6,20 +6,20 @@ import jakarta.persistence.Id;
 @Entity
 public class Category {
     @Id
-    private String Category;
+    private String category;
 
     public Category() {
     }
 
     public Category(String category) {
-        Category = category;
+        this.category = category;
     }
 
     public String getCategory() {
-        return Category;
+        return category;
     }
 
     public void setCategory(String category) {
-        Category = category;
+        this.category = category;
     }
 }

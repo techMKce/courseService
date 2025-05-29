@@ -2,33 +2,77 @@ package com.TechM.Model;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 
 @Entity
-public class Course {
-
-
-	public Course() {
-	}
+public class Course  {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long course_id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)  // or GenerationType.SEQUENCE if your DB supports it
+	@Column(name = "course_id", updatable = false, nullable = false)
+	private Long courseid;
+	@Column
 	private String courseTitle;
 	private String courseDescription;
 	private String instructorName;
 	private String category;
+	private int duration;
+	private boolean isactive;
+	@Column(nullable = false)
+	private Integer credit = 0;// default 0
+
+	@Column(name = "imageurl", columnDefinition = "TEXT")
+	private String imageUrl;
+
+	public Course() {
+
+	}
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public void setCredit(Integer credit) {
+		this.credit = credit;
+	}
+
+	public boolean isIsactive() {
+		return isactive;
+	}
+
+	public void setCourseid(Long courseid) {
+		this.courseid = courseid;
+	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+
+	public void setIsactive(boolean isactive) {
+		this.isactive = isactive;
+	}
+
+	public int getCredit() {
+		return credit;
+	}
+
+	public void setCredit(int credit) {
+		this.credit = credit;
+	}
 
 	@CreationTimestamp
     private LocalDateTime createdAt;
@@ -40,8 +84,20 @@ public class Course {
     @OneToMany(mappedBy="course")
     private List<Section> Sections;
 
-	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String category, LocalDateTime createdAt, LocalDateTime updatedAt, List<Section> sections) {
-		this.course_id = course_id;
+	@ManyToMany(mappedBy = "courses")
+	private List<Instructor> instructors;
+
+	// 2. Getter and Setter for instructors
+	public List<Instructor> getInstructors() {
+		return instructors;
+	}
+
+	public void setInstructors(List<Instructor> instructors) {
+		this.instructors = instructors;
+	}
+
+	public Course(long courseid, String courseTitle, String instructorName, String courseDescription, String category, LocalDateTime createdAt, LocalDateTime updatedAt, List<Section> sections, boolean isactive, int duration, int credit, String imageUrl) {
+		this.courseid = courseid;
 		this.courseTitle = courseTitle;
 		this.instructorName = instructorName;
 		this.courseDescription = courseDescription;
@@ -49,14 +105,19 @@ public class Course {
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		Sections = sections;
+		this.courseid = courseid;
+		this.isactive = isactive;
+		this.duration = duration;
+		this.credit = credit;
+		this.imageUrl = imageUrl;
 	}
 
-	public long getCourse_id() {
-		return course_id;
+	public Long getCourseid() {
+		return courseid;
 	}
 
-	public void setCourse_id(long course_id) {
-		this.course_id = course_id;
+	public void setCourseid(long courseid) {
+		this.courseid = courseid;
 	}
 
 	public String getCourseTitle() {

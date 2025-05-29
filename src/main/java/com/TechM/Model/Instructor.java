@@ -1,17 +1,20 @@
 package com.TechM.Model;
 
 import jakarta.persistence.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
+
 public class Instructor {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
     private String name;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "instructor_course",
             joinColumns = @JoinColumn(name = "instructor_id"),

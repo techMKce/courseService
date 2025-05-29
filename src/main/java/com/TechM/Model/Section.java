@@ -2,14 +2,11 @@ package com.TechM.Model;
 
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -18,9 +15,10 @@ public class Section {
 	public Section() {
 	}
 
-	@Id
+	@Getter
+    @Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private long section_id;
+	private Long section_id;
 	
 	
 	@ManyToOne
@@ -36,8 +34,15 @@ public class Section {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+	@OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Content> contents;
+
+	public List<Content> getContents() {
+		return contents;
+	}
+
 	public Section(long section_id, Course course, String sectionTitle, URL content, int orderNumber,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
+				   LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.section_id = section_id;
 		this.course = course;
@@ -48,11 +53,7 @@ public class Section {
 		this.updatedAt = updatedAt;
 	}
 
-	public long getSection_id() {
-		return section_id;
-	}
-
-	public void setSection_id(long section_id) {
+    public void setSection_id(long section_id) {
 		this.section_id = section_id;
 	}
 
@@ -64,13 +65,14 @@ public class Section {
 		this.course = course;
 	}
 
-	public String getSection_title() {
+	public String getSectiontitle() {
 		return sectionTitle;
 	}
 
-	public void setSection_title(String section_title) {
-		this.sectionTitle = section_title;
+	public void setSectionTitle(String sectionTitle) {
+		this.sectionTitle = sectionTitle;
 	}
+
 
 	public URL getContent() {
 		return content;
@@ -80,12 +82,12 @@ public class Section {
 		this.content = content;
 	}
 
-	public int getOrder_number() {
+	public int getOrderNumber() {
 		return orderNumber;
 	}
 
-	public void setOrder_number(int order_number) {
-		this.orderNumber = order_number;
+	public void setOrderNumber(int orderNumber) {
+		this.orderNumber = orderNumber;
 	}
 
 	public LocalDateTime getCreatedAt() {

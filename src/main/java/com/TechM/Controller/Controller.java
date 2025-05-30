@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequestMapping("/api/course")
 public class Controller {
 
-    private final CourseRepository c;
+    private CourseRepository c;
     private final CategoryRepository ca;
     private final SectionRepository sr;
     private final ContentRepository cr;
@@ -51,7 +51,18 @@ public class Controller {
 
     @PutMapping("/update")
     public ResponseEntity<String> updateCourse(@RequestBody Course course) {
-        c.save(course);
+        Course existingCourse = c.findById(course.getCourse_id())
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+        existingCourse.setCourseTitle(course.getCourseTitle());
+        existingCourse.setCourseDescription(course.getCourseDescription());
+        existingCourse.setImageUrl(course.getImageUrl());
+        existingCourse.setCredit(course.getCredit());
+        existingCourse.setDept(course.getDept());
+        existingCourse.setCreatedAt(course.getCreatedAt());
+        existingCourse.setDuration(course.getDuration());
+        existingCourse.setIsActive(course.getIsActive());
+        existingCourse.setInstructorName(course.getInstructorName());
+        c.save(existingCourse);
         return ResponseEntity.ok("Course modified successfully...");
     }
     @DeleteMapping("/delete")
@@ -92,7 +103,13 @@ public class Controller {
     }
     @PutMapping("/section/update")
     public ResponseEntity<String> updateSection(@RequestBody Section section){
-        sr.save(section);
+        Section existingSection = sr.findById(section.getSection_id())
+                .orElseThrow(() -> new RuntimeException("Section not found"));
+
+        existingSection.setSectionTitle(section.getSectionTitle());
+        existingSection.setSectionDesc(section.getSectionDesc());
+        existingSection.setCreatedAt(section.getCreatedAt());
+        sr.save(existingSection);
         return ResponseEntity.ok("Section updated successfully");
     }
     @DeleteMapping("section/delete")

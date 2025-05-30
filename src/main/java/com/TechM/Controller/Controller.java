@@ -45,10 +45,14 @@ public class Controller {
     @GetMapping("/details")
     public ResponseEntity<List<Course>> getAllCourses() {
         List<Course> courses = c.findAll();
-        System.out.println(courses.get(1).getImageUrl());
+//        System.out.println(courses.get(1).getImageUrl());
         return ResponseEntity.ok(courses); // cleaner response
     }
-
+    @GetMapping("/detailsbyId")
+    public ResponseEntity<List<Course>> getAllCoursesById(@RequestParam List<Long> id) {
+        List<Course> courses = c.findAllById(id);
+        return ResponseEntity.ok(courses); // cleaner response
+    }
     @PutMapping("/update")
     public ResponseEntity<String> updateCourse(@RequestBody Course course) {
         Course existingCourse = c.findById(course.getCourse_id())

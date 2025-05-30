@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/course")
+@RequestMapping("/api/v1/course")
 public class Controller {
 
     private CourseRepository c;
@@ -69,8 +69,20 @@ public class Controller {
         c.save(existingCourse);
         return ResponseEntity.ok("Course modified successfully...");
     }
+
+    @PutMapping("/toggle/{course_id}")
+    public ResponseEntity<String> toggleActivity(@PathVariable("course_id") String course_id){
+        Course course = c.findById(Long.parseLong(course_id)).orElse(null);
+        if(course == null){
+            return new ResponseEntity<>("No course Found...",HttpStatus.OK);
+        }
+        course.setActive(!course.getIsActive());
+        c.save(course);
+        return new ResponseEntity<>("Course Updated", HttpStatus.OK);
+    }
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteCourse(@RequestParam String course_id){
+        System.out.println(course_id);
         c.deleteById(Long.parseLong(course_id));
         return new ResponseEntity<>("Course Deleted Successfully...",HttpStatus.OK);
     }

@@ -42,7 +42,6 @@ public class Course {
 	private int credit;
 
 
-	@Lob
 	@Column(name = "imageUrl", columnDefinition="TEXT")
 	private String imageUrl;
 

@@ -76,7 +76,7 @@ public class Controller {
         if(course == null){
             return new ResponseEntity<>("No course Found...",HttpStatus.OK);
         }
-        course.setActive(!course.getIsActive());
+        course.setIsActive(!course.getIsActive());
         c.save(course);
         return new ResponseEntity<>("Course Updated", HttpStatus.OK);
     }

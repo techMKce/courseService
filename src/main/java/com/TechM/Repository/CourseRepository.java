@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course,Long> {
-    Course findByCourseTitle(String title);
-    List<Course> findByCategory(String category);
+    Course findByCourseTitle(String courseTitle);
+    List<Course> findByCategory(String dept);
     List<Course>  findByIsActiveTrue();
     List<Course>  findByIsActiveFalse();
-    Optional<Course> searchCoursesByTitle(String title);
+    Optional<Course> searchCoursesByTitle(String courseTitle);
 
-    List<Course> findByTitleContainingIgnoreCase(String title);
+    List<Course> findByTitleContainingIgnoreCase(String courseTitle);
 
     
     //By Sanjay => I'm not sure about DB structure ,so i made a generic query

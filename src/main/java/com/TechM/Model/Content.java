@@ -17,6 +17,14 @@ public class Content {
     @JsonIgnoreProperties("sectionContents")
     private Section section;
 
+    public long getContent_id() {
+        return content_id;
+    }
+
+    public void setContent_id(long content_id) {
+        this.content_id = content_id;
+    }
+
     public Content() {
     }
 

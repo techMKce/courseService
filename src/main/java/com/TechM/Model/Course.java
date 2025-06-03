@@ -17,12 +17,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 public class Course {
 
 
-	public Course() {
-	}
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long course_id;
+	private String courseCode;
 	private String courseTitle;
 	private String courseDescription;
 	private String instructorName;
@@ -42,20 +42,23 @@ public class Course {
 	private int credit;
 
 
-	@Lob
 	@Column(name = "imageUrl", columnDefinition="TEXT")
 	private String imageUrl;
-    
-    @OneToMany(mappedBy="course")
+
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
-//	@JsonManagedReference
     private List<Section> Sections;
 
-	public Course(long course_id, String courseTitle, String instructorName, String courseDescription, String dept, LocalDateTime createdAt, LocalDateTime updatedAt,String imageUrl, boolean isActive, int duration, int credit, List<Section> sections) {
+	public Course() {
+
+	}
+
+	public Course(long course_id, String courseCode, String courseTitle, String courseDescription, String instructorName, String dept, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isActive, int duration, int credit, String imageUrl, List<Section> sections) {
 		this.course_id = course_id;
+		this.courseCode = courseCode;
 		this.courseTitle = courseTitle;
-		this.instructorName = instructorName;
 		this.courseDescription = courseDescription;
+		this.instructorName = instructorName;
 		this.dept = dept;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
@@ -80,6 +83,14 @@ public class Course {
 
 	public void setCourse_id(long course_id) {
 		this.course_id = course_id;
+	}
+
+	public String getCourseCode() {
+		return courseCode;
+	}
+
+	public void setCourseCode(String courseCode) {
+		this.courseCode = courseCode;
 	}
 
 	public String getCourseTitle() {
@@ -126,7 +137,7 @@ public class Course {
 		return isActive;
 	}
 
-	public void setActive(boolean active) {
+	public void setIsActive(boolean active) {
 		isActive = active;
 	}
 

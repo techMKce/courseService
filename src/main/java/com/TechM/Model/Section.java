@@ -4,7 +4,9 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -25,7 +27,8 @@ public class Section {
 
 	@ManyToOne
 	@JoinColumn(name = "course_id")
-	@JsonIgnoreProperties("sections")
+	@JsonBackReference
+//	@JsonIgnore
 	private Course course;
 
 	private String sectionTitle;
@@ -38,7 +41,8 @@ public class Section {
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 
-	@OneToMany(mappedBy = "section")
+	@OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
 	private List<Content> sectionContents;
 
 	// Constructors
@@ -52,6 +56,13 @@ public class Section {
 		this.updatedAt = updatedAt;
 		this.createdAt = createdAt;
 	}
+	public long getSection_id() {
+		return section_id;
+	}
+
+	public void setSection_id(long section_id) {
+		this.section_id = section_id;
+	}
 
 	public Course getCourse() {
 		return course;
@@ -59,14 +70,6 @@ public class Section {
 
 	public void setCourse(Course course) {
 		this.course = course;
-	}
-
-	public long getSection_id() {
-		return section_id;
-	}
-
-	public void setSection_id(long section_id) {
-		this.section_id = section_id;
 	}
 
 	public String getSectionTitle() {

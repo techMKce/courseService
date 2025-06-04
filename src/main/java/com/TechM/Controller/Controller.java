@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/course")
+@RequestMapping("/api/v1/course")
 public class Controller {
 
-    private final CourseRepository c;
+    private CourseRepository c;
     private final CategoryRepository ca;
     private final SectionRepository sr;
     private final ContentRepository cr;
@@ -33,7 +33,7 @@ public class Controller {
     @PostMapping("/add")
     public ResponseEntity<String> addCourse(@RequestBody Course course) {
         c.save(course);
-        String category = course.getCategory();
+        String category = course.getDept()  ;
         System.out.println(category);
         System.out.println(ca.findById(category));
         if(!ca.findById(category).isPresent()){
@@ -43,19 +43,46 @@ public class Controller {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<List<Course>> getCourses(@RequestParam("ids") List<Long> courseIds) {
-        List<Course> courses = c.findAllById(courseIds);
+    public ResponseEntity<List<Course>> getAllCourses() {
+        List<Course> courses = c.findAll();
+//        System.out.println(courses.get(1).getImageUrl());
         return ResponseEntity.ok(courses); // cleaner response
     }
-
+    @GetMapping("/detailsbyId")
+    public ResponseEntity<List<Course>> getAllCoursesById(@RequestParam List<Long> id) {
+        List<Course> courses = c.findAllById(id);
+        return ResponseEntity.ok(courses); // cleaner response
+    }
     @PutMapping("/update")
     public ResponseEntity<String> updateCourse(@RequestBody Course course) {
-        c.save(course);
+        Course existingCourse = c.findById(course.getCourse_id())
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+        existingCourse.setCourseTitle(course.getCourseTitle());
+        existingCourse.setCourseDescription(course.getCourseDescription());
+        existingCourse.setImageUrl(course.getImageUrl());
+        existingCourse.setCredit(course.getCredit());
+        existingCourse.setDept(course.getDept());
+        existingCourse.setCreatedAt(course.getCreatedAt());
+        existingCourse.setDuration(course.getDuration());
+        existingCourse.setIsActive(course.getIsActive());
+        existingCourse.setInstructorName(course.getInstructorName());
+        c.save(existingCourse);
         return ResponseEntity.ok("Course modified successfully...");
     }
 
+    @PutMapping("/toggle/{course_id}")
+    public ResponseEntity<String> toggleActivity(@PathVariable("course_id") String course_id){
+        Course course = c.findById(Long.parseLong(course_id)).orElse(null);
+        if(course == null){
+            return new ResponseEntity<>("No course Found...",HttpStatus.OK);
+        }
+        course.setIsActive(!course.getIsActive());
+        c.save(course);
+        return new ResponseEntity<>("Course Updated", HttpStatus.OK);
+    }
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteCourse(@RequestBody String course_id){
+    public ResponseEntity<String> deleteCourse(@RequestParam String course_id){
+        System.out.println(course_id);
         c.deleteById(Long.parseLong(course_id));
         return new ResponseEntity<>("Course Deleted Successfully...",HttpStatus.OK);
     }
@@ -67,15 +94,15 @@ public class Controller {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<List<Course>> getCourses(@RequestParam String category) {
-        List<Course> courses = c.findByCategory(category);
+    public ResponseEntity<List<Course>> getCourses(@RequestParam String dept) {
+        List<Course> courses = c.findByDept(dept);
         return ResponseEntity.ok(courses); // cleaner response
     }
     
     //By Sanjay
     @GetMapping("/filtercourse")
-    public ResponseEntity<List<Course>> getCoursesByPrefix(@RequestParam String course) {
-        List<Course> courses = c.findCoursesByPrefix(course);
+    public ResponseEntity<List<Course>> getCoursesByPrefix(@RequestParam String courseTitle) {
+        List<Course> courses = c.findCoursesByPrefix(courseTitle);
         return ResponseEntity.ok(courses); // clean
     }
     @PostMapping("/section/add")
@@ -92,7 +119,13 @@ public class Controller {
     }
     @PutMapping("/section/update")
     public ResponseEntity<String> updateSection(@RequestBody Section section){
-        sr.save(section);
+        Section existingSection = sr.findById(section.getSection_id())
+                .orElseThrow(() -> new RuntimeException("Section not found"));
+
+        existingSection.setSectionTitle(section.getSectionTitle());
+        existingSection.setSectionDesc(section.getSectionDesc());
+        existingSection.setCreatedAt(section.getCreatedAt());
+        sr.save(existingSection);
         return ResponseEntity.ok("Section updated successfully");
     }
     @DeleteMapping("section/delete")
@@ -109,7 +142,12 @@ public class Controller {
     public ResponseEntity<String> deleteContent(@RequestBody String content_id){
         cr.deleteById(Long.parseLong(content_id));
         return ResponseEntity.ok("Content Deleted successfully");
-}
+    }
+    @GetMapping("section/content/details")
+    public ResponseEntity<List<Content>> getContent(@RequestParam("id") long section_id){
+        List<Content> con=sr.findById(section_id).get().getSectionContents();
+        return ResponseEntity.ok(con);
+    }
     @GetMapping("/count")
     public ResponseEntity<Integer> courseCount(){
         int val = c.findAll().size();
@@ -119,7 +157,7 @@ public class Controller {
     public ResponseEntity<List<Course>> getActiveCourses() {
         List<Course> activeCourses = c.findByIsActiveTrue();
         return ResponseEntity.ok(activeCourses);
-}
+    }
     @GetMapping("/disable")
     public ResponseEntity<List<Course>> getDisableCourses() {
         List<Course> activeCourses = c.findByIsActiveFalse();

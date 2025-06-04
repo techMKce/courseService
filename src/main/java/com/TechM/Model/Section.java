@@ -32,6 +32,7 @@ public class Section {
 	private Course course;
 
 	private String sectionTitle;
+	@Column(columnDefinition = "TEXT")
 	private String sectionDesc;
 
 	@CreationTimestamp

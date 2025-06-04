@@ -161,16 +161,24 @@ public class Controller {
 //                .map(ResponseEntity::ok)
 //                .orElse(ResponseEntity.notFound().build());
 //    }
-    @GetMapping("section/content/details")
-    public ResponseEntity<ContentDTO> getContent(@RequestParam("id") long section_id,
-                                                 HttpServletRequest request) {
-        return cr.findById(section_id)
-                .map(content -> {
-                    String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-                    return ResponseEntity.ok(new ContentDTO(content, baseUrl));
-                })
-                .orElse(ResponseEntity.notFound().build());
+@GetMapping("section/content/details")
+public ResponseEntity<List<ContentDTO>> getContentsBySectionId(@RequestParam("id") long sectionId,
+                                                               HttpServletRequest request) {
+        Optional<Section> section = sr.findById(sectionId);
+    List<Content> contents = cr.findBySection(section.get());
+
+    if (contents.isEmpty()) {
+        return ResponseEntity.notFound().build();
     }
+
+    String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+
+    List<ContentDTO> contentDTOs = contents.stream()
+            .map(content -> new ContentDTO(content, baseUrl))
+            .toList();
+
+    return ResponseEntity.ok(contentDTOs);
+}
     @GetMapping("/count")
     public ResponseEntity<Integer> courseCount(){
         int val = c.findAll().size();

@@ -1,5 +1,6 @@
 package com.TechM.Controller;
 
+import com.TechM.DTO.ContentDTO;
 import com.TechM.Model.Category;
 import com.TechM.Model.Content;
 import com.TechM.Model.Course;
@@ -8,15 +9,22 @@ import com.TechM.Repository.CategoryRepository;
 import com.TechM.Repository.ContentRepository;
 import com.TechM.Repository.CourseRepository;
 import com.TechM.Repository.SectionRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/course")
+@Transactional
 public class Controller {
 
     private CourseRepository c;
@@ -143,10 +151,21 @@ public class Controller {
         cr.deleteById(Long.parseLong(content_id));
         return ResponseEntity.ok("Content Deleted successfully");
     }
+//    @GetMapping("section/content/details")
+//    public ResponseEntity<Content> getContent(@RequestParam("id") long section_id){
+//        return cr.findById(section_id)
+//                .map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.notFound().build());
+//    }
     @GetMapping("section/content/details")
-    public ResponseEntity<List<Content>> getContent(@RequestParam("id") long section_id){
-        List<Content> con=sr.findById(section_id).get().getSectionContents();
-        return ResponseEntity.ok(con);
+    public ResponseEntity<ContentDTO> getContent(@RequestParam("id") long section_id,
+                                                 HttpServletRequest request) {
+        return cr.findById(section_id)
+                .map(content -> {
+                    String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+                    return ResponseEntity.ok(new ContentDTO(content, baseUrl));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
     @GetMapping("/count")
     public ResponseEntity<Integer> courseCount(){
@@ -162,6 +181,60 @@ public class Controller {
     public ResponseEntity<List<Course>> getDisableCourses() {
         List<Course> activeCourses = c.findByIsActiveFalse();
         return ResponseEntity.ok(activeCourses);
+    }
+    @PostMapping("section/content/upload")
+    public ResponseEntity<String> uploadPdf(
+            @RequestParam("sectionId") Long sectionId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "contentUrl", required = false) String contentUrl) {
+
+        try {
+            Section section = sr.findById(sectionId)
+                    .orElseThrow(() -> new RuntimeException("Section not found"));
+
+            Content content = new Content();
+            content.setSection(section);
+            content.setDocument(file.getBytes());
+
+            if (contentUrl != null && !contentUrl.isEmpty()) {
+                try {
+                    content.setContent(new URL(contentUrl));
+                } catch (MalformedURLException e) {
+                    return ResponseEntity.badRequest().body("Invalid content URL");
+                }
+            }
+
+            cr.save(content);
+            return ResponseEntity.ok("PDF uploaded successfully");
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error reading PDF file");
+        }
+    }
+
+    @GetMapping("section/content/download/{id}")
+    public ResponseEntity<byte[]> downloadPdf(@PathVariable Long id) {
+        return cr.findById(id)
+                .map(content -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"document_" + id + ".pdf\"")
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .body(content.getDocument()))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(null));
+    }
+    @GetMapping("section/content/view/{id}")
+    public ResponseEntity<byte[]> viewPdf(@PathVariable Long id) {
+        Content content = cr.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Content not found"));
+
+        byte[] pdfBytes = content.getDocument(); // assuming this holds the PDF
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition.inline().filename("document.pdf").build());
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
 }

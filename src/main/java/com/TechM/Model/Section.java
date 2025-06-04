@@ -55,7 +55,6 @@ public class Section {
 		this.updatedAt = updatedAt;
 		this.createdAt = createdAt;
 	}
-
 	public long getSection_id() {
 		return section_id;
 	}

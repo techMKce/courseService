@@ -11,9 +11,11 @@ import com.TechM.Repository.CourseRepository;
 import com.TechM.Repository.SectionRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -97,11 +99,26 @@ public class Controller {
         c.save(course);
         return new ResponseEntity<>("Course Updated", HttpStatus.OK);
     }
+
+
+    private RestTemplate restTemplate=new RestTemplate();
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteCourse(@RequestParam String course_id){
         System.out.println(course_id);
         c.deleteById(Long.parseLong(course_id));
-        return new ResponseEntity<>("Course Deleted Successfully...",HttpStatus.OK);
+        String enrollmentServiceUrl = "http://localhost:8082/api/v1/course-enrollment/delete-course/" + course_id;
+        String attendanceServiceUrl = "http://localhost:8084/api/v1/attendance/deletebycourseid?courseid=" + course_id;
+
+        try {
+            restTemplate.delete(enrollmentServiceUrl);
+            restTemplate.delete(attendanceServiceUrl);
+        } catch (Exception ex) {
+            System.err.println("Failed to call enrollment delete API: " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Course deleted, but failed to remove enrollments and attendance");
+        }
+
+        return ResponseEntity.ok("Course and related enrollments , attendance deleted successfully.");
     }
 
     @GetMapping("/category")

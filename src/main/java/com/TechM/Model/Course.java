@@ -24,6 +24,7 @@ public class Course {
 	private long course_id;
 	private String courseCode;
 	private String courseTitle;
+	@Column(columnDefinition = "TEXT")
 	private String courseDescription;
 	private String instructorName;
 	private String dept;

@@ -25,5 +25,7 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
     @Query("SELECT c FROM Course c WHERE c.courseTitle LIKE CONCAT(:prefix, '%')")
     List<Course> findCoursesByPrefix(@Param("prefix") String prefix);
 //    List<Course> findByCourseTitle1(String courseTitle);
+    Optional<Course> findByCourseCode(String courseCode);
+
 
 }

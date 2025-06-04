@@ -40,6 +40,10 @@ public class Controller {
 
     @PostMapping("/add")
     public ResponseEntity<String> addCourse(@RequestBody Course course) {
+        if (c.findByCourseCode(course.getCourseCode()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Course already exists with course code: " + course.getCourseCode());
+        }
         c.save(course);
         String category = course.getDept()  ;
         System.out.println(category);
@@ -59,6 +63,11 @@ public class Controller {
     @GetMapping("/detailsbyId")
     public ResponseEntity<List<Course>> getAllCoursesById(@RequestParam List<Long> id) {
         List<Course> courses = c.findAllById(id);
+        return ResponseEntity.ok(courses); // cleaner response
+    }
+    @GetMapping("/detailsbyCourseCode")
+    public ResponseEntity<Optional<Course>> getAllCoursesByCourseCode(@RequestParam String Code) {
+        Optional<Course> courses = c.findByCourseCode(Code);
         return ResponseEntity.ok(courses); // cleaner response
     }
     @PutMapping("/update")
@@ -140,11 +149,6 @@ public class Controller {
     public ResponseEntity<String> deleteSection(@RequestBody String section_id){
         sr.deleteById(Long.parseLong(section_id));
         return ResponseEntity.ok("Section Deleted successfully");
-    }
-    @PostMapping("/section/content/add")
-    public ResponseEntity<String> addContent(@RequestBody Content content){
-        cr.save(content);
-        return ResponseEntity.ok("Content added successfully..!");
     }
     @DeleteMapping("section/content/delete")
     public ResponseEntity<String> deleteContent(@RequestBody String content_id){

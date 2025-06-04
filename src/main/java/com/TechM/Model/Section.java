@@ -45,7 +45,6 @@ public class Section {
 	@JsonIgnore
 	private List<Content> sectionContents;
 
-	// Constructors
 	public Section() {}
 
 	public Section(long section_id, Course course, String sectionTitle, String sectionDesc, LocalDateTime updatedAt, LocalDateTime createdAt) {

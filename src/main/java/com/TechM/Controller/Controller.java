@@ -9,9 +9,16 @@ import com.TechM.Repository.ContentRepository;
 import com.TechM.Repository.CourseRepository;
 import com.TechM.Repository.SectionRepository;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
@@ -162,6 +169,47 @@ public class Controller {
     public ResponseEntity<List<Course>> getDisableCourses() {
         List<Course> activeCourses = c.findByIsActiveFalse();
         return ResponseEntity.ok(activeCourses);
+    }
+    @PostMapping("section/content/upload")
+    public ResponseEntity<String> uploadPdf(
+            @RequestParam("sectionId") Long sectionId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "contentUrl", required = false) String contentUrl) {
+
+        try {
+            Section section = sr.findById(sectionId)
+                    .orElseThrow(() -> new RuntimeException("Section not found"));
+
+            Content content = new Content();
+            content.setSection(section);
+            content.setDocument(file.getBytes());
+
+            if (contentUrl != null && !contentUrl.isEmpty()) {
+                try {
+                    content.setContent(new URL(contentUrl));
+                } catch (MalformedURLException e) {
+                    return ResponseEntity.badRequest().body("Invalid content URL");
+                }
+            }
+
+            cr.save(content);
+            return ResponseEntity.ok("PDF uploaded successfully");
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error reading PDF file");
+        }
+    }
+
+    @GetMapping("section/content/download/{id}")
+    public ResponseEntity<byte[]> downloadPdf(@PathVariable Long id) {
+        return cr.findById(id)
+                .map(content -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"document_" + id + ".pdf\"")
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .body(content.getDocument()))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(null));
     }
 
 }

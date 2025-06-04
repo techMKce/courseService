@@ -189,17 +189,27 @@ public class Controller {
     @PostMapping("section/content/upload")
     public ResponseEntity<String> uploadPdf(
             @RequestParam("sectionId") Long sectionId,
-            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "contentUrl", required = false) String contentUrl) {
 
         try {
             Section section = sr.findById(sectionId)
                     .orElseThrow(() -> new RuntimeException("Section not found"));
 
+            // Validation: At least one of file or contentUrl must be provided
+            if ((file == null || file.isEmpty()) && (contentUrl == null || contentUrl.isEmpty())) {
+                return ResponseEntity.badRequest().body("Either file or content URL must be provided");
+            }
+
             Content content = new Content();
             content.setSection(section);
-            content.setDocument(file.getBytes());
 
+            // Handle PDF file if present
+            if (file != null && !file.isEmpty()) {
+                content.setDocument(file.getBytes());
+            }
+
+            // Handle content URL if present
             if (contentUrl != null && !contentUrl.isEmpty()) {
                 try {
                     content.setContent(new URL(contentUrl));
@@ -209,13 +219,14 @@ public class Controller {
             }
 
             cr.save(content);
-            return ResponseEntity.ok("PDF uploaded successfully");
+            return ResponseEntity.ok("Content uploaded successfully");
 
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error reading PDF file");
+                    .body("Error processing the PDF file");
         }
     }
+
 
     @GetMapping("section/content/download/{id}")
     public ResponseEntity<byte[]> downloadPdf(@PathVariable Long id) {
